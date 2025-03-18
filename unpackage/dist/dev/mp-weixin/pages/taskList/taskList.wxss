@@ -1,0 +1,35 @@
+
+.container {
+	padding: 30rpx;
+	background-color: #f8f9fa;
+	min-height: 100vh;
+}
+.task-list {
+	background: #fff;
+	border-radius: 16rpx;
+	overflow: hidden;
+}
+.task-item {
+	padding: 30rpx;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1rpx solid #f0f0f0;
+}
+.task-item:last-child {
+	border-bottom: none;
+}
+.task-content {
+	flex: 1;
+}
+.task-title {
+	font-size: 32rpx;
+	color: #333;
+	margin-bottom: 8rpx;
+	display: block;
+}
+.task-duration {
+	font-size: 24rpx;
+	color: #666;
+}
+
