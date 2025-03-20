@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI助手 - AI时间管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 83px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .chat-message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .chat-message.user {
+            align-self: flex-end;
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+            margin-left: auto;
+        }
+        .chat-message.assistant {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+        }
+        .message-time {
+            font-size: 10px;
+            margin-top: 4px;
+            opacity: 0.7;
+            text-align: right;
+        }
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+        }
+        .chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 4px 8px 4px 16px;
+        }
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px 0;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        .chat-input:focus {
+            outline: none;
+        }
+        .chat-input::placeholder {
+            color: var(--text-color-light);
+        }
+        .chat-actions {
+            display: flex;
+            align-items: center;
+        }
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color-light);
+            margin-left: 4px;
+        }
+        .send-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .quick-actions {
+            display: flex;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .quick-action-btn {
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            white-space: nowrap;
+            margin-right: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+        }
+        .assistant-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+        }
+        .message-with-avatar {
+            display: flex;
+            align-items: flex-start;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-color-light);
+            margin: 0 2px;
+            animation: typingAnimation 1.5s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .suggestion-chip {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            cursor: pointer;
+        }
+        .task-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .task-card-title {
+            font-weight: 600;
+        }
+        .task-card-time {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        .task-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .task-card-btn {
+            flex: 1;
+            padding: 6px 0;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .task-card-btn.accept {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .task-card-btn.reject {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">AI助手</h1>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <!-- 欢迎消息 -->
+        <div class="message-with-avatar">
+            <div class="assistant-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="chat-message assistant">
+                <div>你好，我是你的AI时间管理助手！我可以帮你安排日程、提供时间管理建议，以及回答与时间管理相关的问题。有什么我可以帮你的吗？</div>
+                <div class="message-time">09:00</div>
+                
+                <div class="suggestion-chips">
+                    <div class="suggestion-chip">帮我安排今天的任务</div>
+                    <div class="suggestion-chip">如何提高工作效率？</div>
+                    <div class="suggestion-chip">分析我的时间使用情况</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户消息 -->
+        <div class="chat-message user">
+            <div>帮我安排今天的任务</div>
+            <div class="message-time">09:05</div>
+        </div>
+
+        <!-- 助手消息 -->
+        <div class="message-with-avatar">
+            <div class="assistant-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="chat-message assistant">
+                <div>好的，根据你的日历和待办事项，我已经为你安排了今天的任务计划，考虑了任务优先级和你的能效曲线：</div>
+                <div class="message-time">09:05</div>
+                
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <div class="task-card-title">上午工作安排</div>
+                    </div>
+                    <ul class="text-sm ml-4 list-disc">
+                        <li>09:00 - 10:00：完成项目周报（高优先级）</li>
+                        <li>10:30 - 11:30：团队会议</li>
+                    </ul>
+                </div>
+                
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <div class="task-card-title">下午工作安排</div>
+                    </div>
+                    <ul class="text-sm ml-4 list-disc">
+                        <li>13:00 - 14:00：回复客户邮件</li>
+                        <li>14:00 - 15:30：准备产品演示（高优先级）</li>
+                        <li>16:00 - 17:00：与设计团队讨论新功能</li>
+                    </ul>
+                </div>
+                
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <div class="task-card-title">个人时间安排</div>
+                    </div>
+                    <ul class="text-sm ml-4 list-disc">
+                        <li>12:00 - 13:00：午餐休息</li>
+                        <li>18:30 - 19:30：健身锻炼</li>
+                    </ul>
+                </div>
+                
+                <div class="task-card-actions">
+                    <div class="task-card-btn accept">接受安排</div>
+                    <div class="task-card-btn reject">调整安排</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户消息 -->
+        <div class="chat-message user">
+            <div>我想把产品演示提前到14:00开始，可以吗？</div>
+            <div class="message-time">09:08</div>
+        </div>
+
+        <!-- 助手消息 -->
+        <div class="message-with-avatar">
+            <div class="assistant-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="chat-message assistant">
+                <div>当然可以！我已经调整了你的日程安排：</div>
+                <div class="message-time">09:08</div>
+                
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <div class="task-card-title">已更新的下午安排</div>
+                    </div>
+                    <ul class="text-sm ml-4 list-disc">
+                        <li>13:00 - 14:00：回复客户邮件</li>
+                        <li>14:00 - 15:30：准备产品演示（高优先级）</li>
+                        <li>16:00 - 17:00：与设计团队讨论新功能</li>
+                    </ul>
+                </div>
+                
+                <div>这个安排看起来更合理，因为根据你的工作习惯分析，14:00-16:00是你下午的高效时段，非常适合进行重要的产品演示准备工作。</div>
+                
+                <div class="suggestion-chips">
+                    <div class="suggestion-chip">提醒我准备产品演示</div>
+                    <div class="suggestion-chip">有什么提高效率的建议？</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户消息 -->
+        <div class="chat-message user">
+            <div>有什么提高效率的建议？</div>
+            <div class="message-time">09:10</div>
+        </div>
+
+        <!-- 正在输入指示器 -->
+        <div class="message-with-avatar">
+            <div class="assistant-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="chat-message assistant" style="padding-bottom: 8px;">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input-container">
+        <div class="quick-actions">
+            <button class="quick-action-btn">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                <span>安排日程</span>
+            </button>
+            <button class="quick-action-btn">
+                <i class="fas fa-tasks mr-2"></i>
+                <span>任务管理</span>
+            </button>
+            <button class="quick-action-btn">
+                <i class="fas fa-chart-line mr-2"></i>
+                <span>效率分析</span>
+            </button>
+            <button class="quick-action-btn">
+                <i class="fas fa-lightbulb mr-2"></i>
+                <span>效率建议</span>
+            </button>
+        </div>
+        
+        <div class="chat-input-wrapper">
+            <input type="text" class="chat-input" placeholder="输入消息..." id="message-input">
+            <div class="chat-actions">
+                <button class="action-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="action-btn send-btn" id="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-tasks"></i>
+            <span>任务</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-calendar"></i>
+            <span>日历</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-clock"></i>
+            <span>专注</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 接收主题消息
+        window.addEventListener('message', function(event) {
+            if (event.data.theme) {
+                if (event.data.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // 请求主题信息
+        window.parent.postMessage('getTheme', '*');
+
+        // 发送消息功能
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatContainer = document.querySelector('.chat-container');
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                // 添加用户消息
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const timeString = `${hours}:${minutes}`;
+                
+                const userMessageHTML = `
+                    <div class="chat-message user">
+                        <div>${message}</div>
+                        <div class="message-time">${timeString}</div>
+                    </div>
+                `;
+                
+                // 移除正在输入指示器
+                const typingIndicator = document.querySelector('.typing-indicator')?.parentElement?.parentElement;
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+                
+                // 添加用户消息
+                chatContainer.insertAdjacentHTML('beforeend', userMessageHTML);
+                
+                // 添加正在输入指示器
+                const typingHTML = `
+                    <div class="message-with-avatar">
+                        <div class="assistant-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="chat-message assistant" style="padding-bottom: 8px;">
+                            <div class="typing-indicator">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatContainer.insertAdjacentHTML('beforeend', typingHTML);
+                
+                // 清空输入框
+                messageInput.value = '';
+                
+                // 滚动到底部
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                // 在实际应用中，这里会发送消息到后端并获取回复
+                // 模拟回复
+                setTimeout(function() {
+                    // 移除正在输入指示器
+                    const typingIndicator = document.querySelector('.typing-indicator')?.parentElement?.parentElement;
+                    if (typingIndicator) {
+                        typingIndicator.remove();
+                    }
+                    
+                    // 添加助手回复
+                    const assistantMessageHTML = `
+                        <div class="message-with-avatar">
+                            <div class="assistant-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="chat-message assistant">
+                                <div>根据你的工作习惯和任务性质，我有以下提高效率的建议：</div>
+                                <div class="message-time">${timeString}</div>
+                                
+                                <ul class="text-sm ml-4 list-disc mt-2">
+                                    <li>使用番茄工作法：25分钟专注工作，然后休息5分钟</li>
+                                    <li>将类似的任务批量处理，减少任务切换成本</li>
+                                    <li>设置明确的任务开始和结束时间，增加时间紧迫感</li>
+                                    <li>利用你的高效时段（上午9-11点，下午2-4点）处理重要任务</li>
+                                    <li>每完成一个任务后，给自己一个小奖励，增强积极性</li>
+                                </ul>
+                                
+                                <div class="mt-2">需要我为你设置番茄钟计时器吗？</div>
+                                
+                                <div class="suggestion-chips">
+                                    <div class="suggestion-chip">设置25分钟番茄钟</div>
+                                    <div class="suggestion-chip">如何减少拖延？</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    chatContainer.insertAdjacentHTML('beforeend', assistantMessageHTML);
+                    
+                    // 滚动到底部
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 1500);
+            }
+        }
+
+        // 发送按钮点击事件
+        sendBtn.addEventListener('click', sendMessage);
+
+        // 输入框回车事件
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 快捷操作按钮点击事件
+        document.querySelectorAll('.quick-action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                messageInput.value = this.querySelector('span').textContent;
+                sendMessage();
+            });
+        });
+
+        // 建议芯片点击事件
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('suggestion-chip')) {
+                messageInput.value = e.target.textContent;
+                sendMessage();
+            }
+        });
+
+        // 任务卡片按钮点击事件
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('task-card-btn')) {
+                const action = e.target.classList.contains('accept') ? '接受' : '调整';
+                messageInput.value = `${action}任务安排`;
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

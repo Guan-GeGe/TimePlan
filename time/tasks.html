@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务管理 - AI时间管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 83px;
+        }
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color);
+            z-index: 10;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .task-filters {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-right: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            margin-right: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .task-checkbox.checked {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .task-content {
+            flex: 1;
+        }
+        .task-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .task-title.completed {
+            text-decoration: line-through;
+            color: var(--text-color-light);
+        }
+        .task-details {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        .task-details i {
+            margin-right: 4px;
+        }
+        .task-details span {
+            margin-right: 12px;
+        }
+        .task-priority {
+            width: 4px;
+            height: 100%;
+            border-radius: 2px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .priority-high {
+            background-color: var(--danger-color);
+        }
+        .priority-medium {
+            background-color: var(--warning-color);
+        }
+        .priority-low {
+            background-color: var(--success-color);
+        }
+        .add-task-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+        .task-group {
+            margin-bottom: 24px;
+        }
+        .task-group-header {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-count {
+            font-size: 12px;
+            color: var(--text-color-light);
+            font-weight: normal;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-color-light);
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4">
+        <div class="header">
+            <h1 class="text-2xl font-bold mb-4">任务管理</h1>
+            
+            <!-- 任务筛选 -->
+            <div class="task-filters">
+                <button class="filter-btn active">全部</button>
+                <button class="filter-btn">今天</button>
+                <button class="filter-btn">明天</button>
+                <button class="filter-btn">本周</button>
+                <button class="filter-btn">工作</button>
+                <button class="filter-btn">个人</button>
+                <button class="filter-btn">已完成</button>
+            </div>
+            
+            <!-- 搜索框 -->
+            <div class="relative mb-4">
+                <input type="text" placeholder="搜索任务..." class="input pl-10">
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- 今日任务组 -->
+        <div class="task-group">
+            <div class="task-group-header">
+                <span>今天</span>
+                <span class="task-count">5个任务</span>
+            </div>
+            
+            <div class="task-list">
+                <div class="task-item">
+                    <div class="task-priority priority-high"></div>
+                    <div class="task-checkbox checked">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title completed">完成项目周报</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>09:00 - 10:00</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>工作</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-priority priority-medium"></div>
+                    <div class="task-checkbox checked">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title completed">团队会议</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>10:30 - 11:30</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>会议</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-priority priority-low"></div>
+                    <div class="task-checkbox checked">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title completed">回复客户邮件</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>13:00 - 14:00</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>沟通</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-priority priority-high"></div>
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">准备产品演示</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>15:00 - 16:30</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>重要</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-priority priority-low"></div>
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">健身锻炼</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>18:30 - 19:30</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>个人</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 明天任务组 -->
+        <div class="task-group">
+            <div class="task-group-header">
+                <span>明天</span>
+                <span class="task-count">3个任务</span>
+            </div>
+            
+            <div class="task-list">
+                <div class="task-item">
+                    <div class="task-priority priority-high"></div>
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">客户需求评审</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>10:00 - 11:30</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>会议</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-priority priority-medium"></div>
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">撰写项目方案</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>13:30 - 15:30</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>工作</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-priority priority-low"></div>
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">阅读新书</div>
+                        <div class="task-details">
+                            <i class="far fa-clock"></i>
+                            <span>20:00 - 21:00</span>
+                            <i class="far fa-bookmark"></i>
+                            <span>个人</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加任务按钮 -->
+        <div class="add-task-btn">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-tasks"></i>
+            <span>任务</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-calendar"></i>
+            <span>日历</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-clock"></i>
+            <span>专注</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 接收主题消息
+        window.addEventListener('message', function(event) {
+            if (event.data.theme) {
+                if (event.data.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // 请求主题信息
+        window.parent.postMessage('getTheme', '*');
+
+        // 任务复选框交互
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                const checkIcon = this.querySelector('i');
+                checkIcon.classList.toggle('opacity-0');
+                
+                const taskTitle = this.nextElementSibling.querySelector('.task-title');
+                taskTitle.classList.toggle('completed');
+            });
+        });
+
+        // 筛选按钮交互
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelector('.filter-btn.active').classList.remove('active');
+                this.classList.add('active');
+                
+                // 在实际应用中，这里会根据筛选条件过滤任务
+            });
+        });
+    </script>
+</body>
+</html>

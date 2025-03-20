@@ -1,65 +1,89 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "时间管理",
-				"disableScroll": true,
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/addTask/addTask",
-			"style": {
-				"navigationBarTitleText": "添加任务"
-			}
-		},
-		{
-			"path": "pages/focus/focus",
-			"style": {
-				"navigationBarTitleText": "专注"
-			}
-		},
-		{
-			"path": "pages/taskList/taskList",
-			"style": {
-				"navigationBarTitleText": "选择任务"
-			}
-		},
-		{
-			"path": "pages/index1/index",
-			"style": {
-				"navigationBarTitleText": "时间管理"
-			}
-		}
-	],
-	"subPackages": [],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "时间管理",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"uniIdRouter": {},
-	"easycom": {
-		"autoscan": true,
-		"custom": {
-			"^uni-(.*)": "@/uni_modules/uni-$1/components/uni-$1/uni-$1.vue"
-		}
-	},
-	"tabBar": {
-		"color": "#999999",
-		"selectedColor": "#4CAF50",
-		"backgroundColor": "#FFFFFF",
-		"list": [
-			{
-				"pagePath": "pages/index/index",
-				"text": "首页"
-			},
-			{
-				"pagePath": "pages/taskList/taskList",
-				"text": "任务"
-			}
-		]
-	}
+  "pages": [
+    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "TimePlan",
+        "disableScroll": true,
+        "enablePullDownRefresh": false,
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/addTask/addTask",
+      "style": {
+        "navigationBarTitleText": "添加任务"
+      }
+    },
+    {
+      "path": "pages/focus/focus",
+      "style": {
+        "navigationBarTitleText": "专注模式",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/taskList/taskList",
+      "style": {
+        "navigationBarTitleText": "任务列表"
+      }
+    },
+    {
+      "path": "pages/index1/index",
+      "style": {
+        "navigationBarTitleText": "时间管理"
+      }
+    },
+    {
+      "path": "pages/analytics/analytics",
+      "style": {
+        "navigationBarTitleText": "统计分析"
+      }
+    },
+    {
+      "path": "pages/calendar/calendar",
+      "style": {
+        "navigationBarTitleText": "日历"
+      }
+    }
+  ],
+  "subPackages": [],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "TimePlan",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F5F7FA"
+  },
+  "uniIdRouter": {},
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@/uni_modules/uni-$1/components/uni-$1/uni-$1.vue"
+    }
+  },
+  "tabBar": {
+    "color": "#9CA3AF",
+    "selectedColor": "#4F46E5",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/taskList/taskList",
+        "text": "任务"
+      },
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "日历"
+      },
+      {
+        "pagePath": "pages/focus/focus",
+        "text": "专注"
+      }
+    ]
+  }
 }

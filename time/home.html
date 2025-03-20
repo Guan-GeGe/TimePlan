@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主页 - AI时间管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 83px;
+        }
+        .greeting-card {
+            background-image: linear-gradient(135deg, var(--primary-color), #5e60ce);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            margin-right: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .task-checkbox.checked {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .task-content {
+            flex: 1;
+        }
+        .task-time {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .task-title.completed {
+            text-decoration: line-through;
+            color: var(--text-color-light);
+        }
+        .productivity-chart {
+            height: 150px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-end;
+        }
+        .chart-bar {
+            flex: 1;
+            background-color: var(--primary-color);
+            margin: 0 3px;
+            border-radius: 4px 4px 0 0;
+        }
+        .chart-label {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 4px;
+            color: var(--text-color-light);
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+        }
+        .action-btn i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        .action-btn span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-4">
+        <!-- 问候卡片 -->
+        <div class="greeting-card glass-morphism animate-fade-in">
+            <h2 class="text-2xl font-bold mb-2">早上好，小明</h2>
+            <p class="text-white text-opacity-90">今天是星期二，3月18日</p>
+            <div class="flex items-center mt-4">
+                <div class="flex-1">
+                    <p class="text-sm text-white text-opacity-80 mb-1">今日效率评分</p>
+                    <div class="flex items-center">
+                        <span class="text-3xl font-bold mr-2">92</span>
+                        <i class="fas fa-arrow-up text-green-300"></i>
+                        <span class="text-green-300 text-sm ml-1">+5%</span>
+                    </div>
+                </div>
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-bolt text-2xl text-yellow-300"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷操作 -->
+        <div class="quick-actions">
+            <div class="action-btn">
+                <i class="fas fa-plus"></i>
+                <span>新建任务</span>
+            </div>
+            <div class="action-btn">
+                <i class="fas fa-clock"></i>
+                <span>开始专注</span>
+            </div>
+            <div class="action-btn">
+                <i class="fas fa-calendar-alt"></i>
+                <span>查看日历</span>
+            </div>
+            <div class="action-btn">
+                <i class="fas fa-chart-line"></i>
+                <span>效率分析</span>
+            </div>
+        </div>
+
+        <!-- 今日任务 -->
+        <div class="card animate-slide-up">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">今日任务</h3>
+                <span class="text-sm text-primary">3/5 已完成</span>
+            </div>
+            <div class="task-list">
+                <div class="task-item">
+                    <div class="task-checkbox checked">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title completed">完成项目周报</div>
+                        <div class="task-time">09:00 - 10:00</div>
+                    </div>
+                    <div class="tag tag-success">工作</div>
+                </div>
+                <div class="task-item">
+                    <div class="task-checkbox checked">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title completed">团队会议</div>
+                        <div class="task-time">10:30 - 11:30</div>
+                    </div>
+                    <div class="tag tag-primary">会议</div>
+                </div>
+                <div class="task-item">
+                    <div class="task-checkbox checked">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title completed">回复客户邮件</div>
+                        <div class="task-time">13:00 - 14:00</div>
+                    </div>
+                    <div class="tag tag-warning">沟通</div>
+                </div>
+                <div class="task-item">
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">准备产品演示</div>
+                        <div class="task-time">15:00 - 16:30</div>
+                    </div>
+                    <div class="tag tag-danger">重要</div>
+                </div>
+                <div class="task-item">
+                    <div class="task-checkbox">
+                        <i class="fas fa-check text-xs opacity-0"></i>
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">健身锻炼</div>
+                        <div class="task-time">18:30 - 19:30</div>
+                    </div>
+                    <div class="tag tag-secondary">个人</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 本周生产力 -->
+        <div class="card animate-slide-up">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold">本周生产力</h3>
+                <span class="text-sm text-primary">查看详情</span>
+            </div>
+            <div class="productivity-chart">
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 60%;"></div>
+                    <div class="chart-label">一</div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 80%;"></div>
+                    <div class="chart-label">二</div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 45%;"></div>
+                    <div class="chart-label">三</div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 70%;"></div>
+                    <div class="chart-label">四</div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 90%;"></div>
+                    <div class="chart-label">五</div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 30%;"></div>
+                    <div class="chart-label">六</div>
+                </div>
+                <div class="flex flex-col flex-1">
+                    <div class="chart-bar" style="height: 20%;"></div>
+                    <div class="chart-label">日</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI建议 -->
+        <div class="card-glass animate-slide-up">
+            <div class="flex items-start">
+                <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-2">AI助手建议</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        根据你的工作习惯分析，建议将"准备产品演示"提前到14:00开始，这样可以避免下午精力低谷期，提高工作效率。
+                    </p>
+                    <div class="flex mt-3">
+                        <button class="btn btn-sm btn-primary mr-2">接受建议</button>
+                        <button class="btn btn-sm btn-outline">忽略</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item active">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-tasks"></i>
+            <span>任务</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-calendar"></i>
+            <span>日历</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-clock"></i>
+            <span>专注</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 接收主题消息
+        window.addEventListener('message', function(event) {
+            if (event.data.theme) {
+                if (event.data.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // 请求主题信息
+        window.parent.postMessage('getTheme', '*');
+
+        // 任务复选框交互
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                const checkIcon = this.querySelector('i');
+                checkIcon.classList.toggle('opacity-0');
+                
+                const taskTitle = this.nextElementSibling.querySelector('.task-title');
+                taskTitle.classList.toggle('completed');
+            });
+        });
+
+        // 更新日期
+        function updateDate() {
+            const now = new Date();
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const day = days[now.getDay()];
+            const date = now.getDate();
+            const month = now.getMonth() + 1;
+            
+            // 根据时间段更新问候语
+            const hours = now.getHours();
+            let greeting = '';
+            if (hours < 12) {
+                greeting = '早上好';
+            } else if (hours < 18) {
+                greeting = '下午好';
+            } else {
+                greeting = '晚上好';
+            }
+            
+            document.querySelector('.greeting-card h2').textContent = `${greeting}，小明`;
+            document.querySelector('.greeting-card p').textContent = `今天是${day}，${month}月${date}日`;
+        }
+        
+        updateDate();
+    </script>
+</body>
+</html>

@@ -41,12 +41,14 @@
 export default {
 	name: 'uniTh',
 	options: {
-		// #ifdef MP-TOUTIAO
-		virtualHost: false,
-		// #endif
-		// #ifndef MP-TOUTIAO
-		virtualHost: true
-		// #endif
+		virtualHost: (() => {
+			// #ifdef MP-TOUTIAO
+			return false
+			// #endif
+			// #ifndef MP-TOUTIAO
+			return true
+			// #endif
+		})()
 	},
 	components: {
 		// #ifdef H5
@@ -112,11 +114,12 @@ export default {
 					return this.width.replace('px', '')
 				} else if (this.width.match(regexHaveUnitRpx) !== null) { // 携带了 rpx
 					let numberRpx = Number(this.width.replace('rpx', ''))
+					let widthCoe = 0;
 					// #ifdef MP-WEIXIN
-					let widthCoe = uni.getWindowInfo().screenWidth / 750
+					widthCoe = uni.getWindowInfo().windowWidth / 750
 					// #endif
 					// #ifndef MP-WEIXIN
-					let widthCoe = uni.getSystemInfoSync().screenWidth / 750
+					widthCoe = uni.getSystemInfoSync().screenWidth / 750
 					// #endif
 					return Math.round(numberRpx * widthCoe)
 				} else if (this.width.match(regexHaveNotUnit) !== null) { // 未携带 rpx或px 的纯数字 String
@@ -245,14 +248,11 @@ $uni-primary: #007aff !default;
 	align-items: center;
 	flex: 1;
 }
-.arrow-box {
-}
 .arrow {
 	display: block;
 	position: relative;
 	width: 10px;
 	height: 8px;
-	// border: 1px red solid;
 	left: 5px;
 	overflow: hidden;
 	cursor: pointer;

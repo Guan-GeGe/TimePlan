@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析报告 - AI时间管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 83px;
+        }
+        .header {
+            padding: 16px 0;
+        }
+        .time-range-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .time-range {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .time-nav {
+            display: flex;
+            align-items: center;
+        }
+        .time-nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            margin: 0 4px;
+        }
+        .chart-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .chart-title {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 6px;
+        }
+        .productivity-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .chart-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chart-bar {
+            width: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+        .chart-bar-secondary {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-color);
+            border-radius: 4px 4px 0 0;
+        }
+        .chart-label {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        .pie-chart {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--primary-color) 0% 35%,
+                var(--warning-color) 35% 60%,
+                var(--success-color) 60% 75%,
+                var(--secondary-color) 75% 100%
+            );
+            margin: 20px auto;
+            position: relative;
+        }
+        .pie-chart::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background-color: var(--card-bg);
+            border-radius: 50%;
+        }
+        .pie-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1;
+        }
+        .pie-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .pie-label {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        .category-distribution {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .category-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .category-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .category-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .category-bar {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .category-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        .insights-container {
+            margin-top: 30px;
+        }
+        .insight-item {
+            display: flex;
+            margin-bottom: 16px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        .insight-content {
+            flex: 1;
+        }
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .insight-description {
+            font-size: 14px;
+            color: var(--text-color-light);
+        }
+        .time-period-selector {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .period-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-right: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        .period-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4">
+        <div class="header">
+            <h1 class="text-2xl font-bold mb-4">分析报告</h1>
+            
+            <!-- 时间段选择器 -->
+            <div class="time-period-selector">
+                <button class="period-btn">日</button>
+                <button class="period-btn active">周</button>
+                <button class="period-btn">月</button>
+                <button class="period-btn">季度</button>
+                <button class="period-btn">年</button>
+            </div>
+            
+            <!-- 时间范围选择器 -->
+            <div class="time-range-selector">
+                <div class="time-range">2025年3月12日 - 3月18日</div>
+                <div class="time-nav">
+                    <button class="time-nav-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="time-nav-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生产力评分 -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">生产力评分</div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--primary-color);"></div>
+                        <span>实际</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--secondary-color);"></div>
+                        <span>目标</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="productivity-chart">
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 60%;">
+                        <div class="chart-bar-secondary" style="height: 70%;"></div>
+                    </div>
+                    <div class="chart-label">周三</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 80%;">
+                        <div class="chart-bar-secondary" style="height: 70%;"></div>
+                    </div>
+                    <div class="chart-label">周四</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 45%;">
+                        <div class="chart-bar-secondary" style="height: 70%;"></div>
+                    </div>
+                    <div class="chart-label">周五</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 30%;">
+                        <div class="chart-bar-secondary" style="height: 50%;"></div>
+                    </div>
+                    <div class="chart-label">周六</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 20%;">
+                        <div class="chart-bar-secondary" style="height: 40%;"></div>
+                    </div>
+                    <div class="chart-label">周日</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 70%;">
+                        <div class="chart-bar-secondary" style="height: 70%;"></div>
+                    </div>
+                    <div class="chart-label">周一</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 90%;">
+                        <div class="chart-bar-secondary" style="height: 70%;"></div>
+                    </div>
+                    <div class="chart-label">周二</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 时间分配 -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">时间分配</div>
+            </div>
+            
+            <div class="pie-chart">
+                <div class="pie-center">
+                    <div class="pie-value">35h</div>
+                    <div class="pie-label">总工作时间</div>
+                </div>
+            </div>
+            
+            <div class="chart-legend" style="justify-content: center; margin-bottom: 20px;">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--primary-color);"></div>
+                    <span>工作 (35%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--warning-color);"></div>
+                    <span>会议 (25%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--success-color);"></div>
+                    <span>学习 (15%)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--secondary-color);"></div>
+                    <span>其他 (25%)</span>
+                </div>
+            </div>
+            
+            <div class="category-distribution">
+                <div class="category-item">
+                    <div class="category-header">
+                        <div class="category-name">工作</div>
+                        <div class="category-value">12.25h</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill" style="width: 35%; background-color: var(--primary-color);"></div>
+                    </div>
+                </div>
+                <div class="category-item">
+                    <div class="category-header">
+                        <div class="category-name">会议</div>
+                        <div class="category-value">8.75h</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill" style="width: 25%; background-color: var(--warning-color);"></div>
+                    </div>
+                </div>
+                <div class="category-item">
+                    <div class="category-header">
+                        <div class="category-name">学习</div>
+                        <div class="category-value">5.25h</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill" style="width: 15%; background-color: var(--success-color);"></div>
+                    </div>
+                </div>
+                <div class="category-item">
+                    <div class="category-header">
+                        <div class="category-name">其他</div>
+                        <div class="category-value">8.75h</div>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-fill" style="width: 25%; background-color: var(--secondary-color);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 专注时间统计 -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">专注时间统计</div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary">18</div>
+                    <div class="text-sm text-gray-500">专注次数</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary">7.5h</div>
+                    <div class="text-sm text-gray-500">专注总时长</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary">25min</div>
+                    <div class="text-sm text-gray-500">平均专注时长</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary">85%</div>
+                    <div class="text-sm text-gray-500">专注完成率</div>
+                </div>
+            </div>
+            
+            <div class="productivity-chart" style="height: 150px;">
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 40%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周三</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 80%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周四</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 60%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周五</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 20%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周六</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 10%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周日</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 70%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周一</div>
+                </div>
+                <div class="chart-column">
+                    <div class="chart-bar" style="height: 90%; background-color: var(--success-color);"></div>
+                    <div class="chart-label">周二</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI洞察 -->
+        <div class="insights-container">
+            <h3 class="text-lg font-bold mb-4">AI洞察</h3>
+            
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">最佳工作时段</div>
+                    <div class="insight-description">
+                        数据显示你在上午9点至11点的工作效率最高，建议将重要任务安排在这个时间段。
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">会议时间过多</div>
+                    <div class="insight-description">
+                        本周会议占用了25%的工作时间，高于你的目标值20%。建议减少非必要会议，或缩短会议时长。
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-title">专注时间新纪录</div>
+                    <div class="insight-description">
+                        本周二你达成了单日4小时专注时间，这是近一个月来的最佳表现！
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-tasks"></i>
+            <span>任务</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-calendar"></i>
+            <span>日历</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-clock"></i>
+            <span>专注</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 接收主题消息
+        window.addEventListener('message', function(event) {
+            if (event.data.theme) {
+                if (event.data.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // 请求主题信息
+        window.parent.postMessage('getTheme', '*');
+
+        // 时间段选择
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelector('.period-btn.active').classList.remove('active');
+                this.classList.add('active');
+                
+                // 在实际应用中，这里会根据所选时间段更新图表数据
+            });
+        });
+    </script>
+</body>
+</html>

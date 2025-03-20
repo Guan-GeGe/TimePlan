@@ -1,0 +1,238 @@
+
+.container {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		background-color: #f9fafb;
+}
+.header {
+		padding: 30rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: 1rpx solid #e5e7eb;
+		background-color: #ffffff;
+}
+.header-title {
+		font-size: 36rpx;
+		font-weight: bold;
+		color: #1f2937;
+}
+.header-actions {
+		display: flex;
+		align-items: center;
+}
+.action-btn {
+		padding: 12rpx 24rpx;
+		border-radius: 30rpx;
+		background-color: #f3f4f6;
+		color: #4b5563;
+		margin-left: 16rpx;
+		font-size: 28rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+}
+.calendar-header {
+		background-color: #ffffff;
+		padding: 20rpx 30rpx;
+}
+.month-nav {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 30rpx;
+}
+.month-title {
+		font-size: 32rpx;
+		font-weight: bold;
+		color: #1f2937;
+}
+.nav-btn {
+		width: 64rpx;
+		height: 64rpx;
+		border-radius: 50%;
+		background-color: #f3f4f6;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+}
+.weekdays {
+		display: flex;
+		justify-content: space-between;
+		padding-bottom: 16rpx;
+		border-bottom: 1rpx solid #e5e7eb;
+}
+.weekday {
+		width: 90rpx;
+		text-align: center;
+		font-size: 28rpx;
+		color: #6b7280;
+}
+.calendar-grid {
+		display: flex;
+		flex-wrap: wrap;
+		background-color: #ffffff;
+		padding: 0 30rpx 30rpx;
+}
+.calendar-day {
+		width: 90rpx;
+		height: 90rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		margin-top: 16rpx;
+}
+.day-number {
+		font-size: 28rpx;
+		color: #1f2937;
+}
+.calendar-day.other-month .day-number {
+		color: #d1d5db;
+}
+.calendar-day.today {
+		background-color: rgba(79, 70, 229, 0.1);
+		border-radius: 50%;
+}
+.calendar-day.selected {
+		background-color: #4f46e5;
+		border-radius: 50%;
+}
+.calendar-day.selected .day-number {
+		color: #ffffff;
+}
+.event-indicators {
+		display: flex;
+		justify-content: center;
+		position: absolute;
+		bottom: 8rpx;
+		left: 0;
+		right: 0;
+}
+.event-dot {
+		width: 8rpx;
+		height: 8rpx;
+		border-radius: 50%;
+		margin: 0 2rpx;
+}
+.event-dot.priority-1 {
+		background-color: #ef4444;
+}
+.event-dot.priority-2 {
+		background-color: #f59e0b;
+}
+.event-dot.priority-3 {
+		background-color: #10b981;
+}
+.events-container {
+		flex: 1;
+		background-color: #ffffff;
+		margin-top: 16rpx;
+		border-radius: 24rpx 24rpx 0 0;
+		padding: 30rpx;
+		box-shadow: 0 -4rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+.events-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 24rpx;
+}
+.events-date {
+		font-size: 32rpx;
+		font-weight: bold;
+		color: #1f2937;
+}
+.events-count {
+		font-size: 28rpx;
+		color: #6b7280;
+}
+.events-list {
+		height: calc(100% - 80rpx);
+}
+.event-item {
+		display: flex;
+		align-items: center;
+		padding: 24rpx;
+		border-left: 8rpx solid transparent;
+		border-radius: 16rpx;
+		margin-bottom: 16rpx;
+		background-color: #f9fafb;
+}
+.event-item.priority-1 {
+		border-left-color: #ef4444;
+}
+.event-item.priority-2 {
+		border-left-color: #f59e0b;
+}
+.event-item.priority-3 {
+		border-left-color: #10b981;
+}
+.event-time {
+		width: 180rpx;
+		font-size: 24rpx;
+		color: #6b7280;
+		display: flex;
+		flex-direction: column;
+}
+.event-priority {
+		width: 24rpx;
+		height: 24rpx;
+		border-radius: 50%;
+		margin-top: 8rpx;
+}
+.event-priority.priority-1 {
+		background-color: #ef4444;
+}
+.event-priority.priority-2 {
+		background-color: #f59e0b;
+}
+.event-priority.priority-3 {
+		background-color: #10b981;
+}
+.event-content {
+		flex: 1;
+		margin: 0 20rpx;
+}
+.event-title {
+		font-size: 28rpx;
+		font-weight: 500;
+		color: #1f2937;
+		margin-bottom: 8rpx;
+}
+.event-location {
+		font-size: 24rpx;
+		color: #6b7280;
+		display: flex;
+		align-items: center;
+}
+.event-location uni-icons {
+		margin-right: 4rpx;
+}
+.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60rpx 0;
+}
+.empty-image {
+		width: 200rpx;
+		height: 200rpx;
+		margin-bottom: 30rpx;
+}
+.empty-text {
+		font-size: 28rpx;
+		color: #6b7280;
+		margin-bottom: 30rpx;
+}
+.add-event-btn {
+		background-color: #4f46e5;
+		color: #ffffff;
+		font-size: 28rpx;
+		padding: 16rpx 40rpx;
+		border-radius: 40rpx;
+		border: none;
+}

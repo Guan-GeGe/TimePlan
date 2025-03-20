@@ -1,8 +1,9 @@
 {
-  "navigationBarTitleText": "时间管理",
+  "navigationBarTitleText": "TimePlan",
   "disableScroll": true,
   "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
   "usingComponents": {
-    "uni-icons": "/uni_modules/uni-icons/components/uni-icons/uni-icons"
+    "uni-icons": "../../uni_modules/uni-icons/components/uni-icons/uni-icons"
   }
 }

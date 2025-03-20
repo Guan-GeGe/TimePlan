@@ -4,19 +4,22 @@
     "pages/addTask/addTask",
     "pages/focus/focus",
     "pages/taskList/taskList",
-    "pages/index1/index"
+    "pages/index1/index",
+    "pages/analytics/analytics",
+    "pages/calendar/calendar"
   ],
   "subPackages": [],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "时间管理",
+    "navigationBarTitleText": "TimePlan",
     "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
+    "backgroundColor": "#F5F7FA"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#4CAF50",
+    "color": "#9CA3AF",
+    "selectedColor": "#4F46E5",
     "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -25,6 +28,14 @@
       {
         "pagePath": "pages/taskList/taskList",
         "text": "任务"
+      },
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "日历"
+      },
+      {
+        "pagePath": "pages/focus/focus",
+        "text": "专注"
       }
     ]
   },

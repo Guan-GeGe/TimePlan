@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专注计时器 - AI时间管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 83px;
+        }
+        .header {
+            padding: 16px 0;
+            text-align: center;
+        }
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .timer-circle {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0%, transparent 0%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(79, 70, 229, 0.2);
+        }
+        .timer-circle::before {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .timer-display {
+            position: relative;
+            z-index: 2;
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-variant-numeric: tabular-nums;
+        }
+        .timer-label {
+            font-size: 16px;
+            margin-top: 8px;
+            color: var(--text-color-light);
+        }
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .timer-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .timer-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+        }
+        .timer-btn:active {
+            transform: scale(0.95);
+        }
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 4px;
+            width: fit-content;
+        }
+        .mode-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .mode-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .task-selector {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 20px;
+        }
+        .task-selector select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 16px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 12px) center;
+            padding-right: 32px;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-color-light);
+        }
+        .history-container {
+            margin-top: 30px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-task {
+            font-weight: 600;
+        }
+        .history-time {
+            color: var(--text-color-light);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4">
+        <div class="header">
+            <h1 class="text-2xl font-bold">专注计时器</h1>
+        </div>
+
+        <!-- 模式选择器 -->
+        <div class="mode-selector">
+            <button class="mode-btn active">番茄钟</button>
+            <button class="mode-btn">计时器</button>
+            <button class="mode-btn">秒表</button>
+        </div>
+        
+        <!-- 任务选择 -->
+        <div class="task-selector">
+            <select id="task-select">
+                <option value="">选择要专注的任务...</option>
+                <option value="1" selected>准备产品演示</option>
+                <option value="2">回复客户邮件</option>
+                <option value="3">撰写项目方案</option>
+                <option value="4">阅读新书</option>
+            </select>
+        </div>
+
+        <!-- 计时器 -->
+        <div class="timer-container">
+            <div class="timer-circle" id="timer-progress">
+                <div class="timer-display" id="timer">25:00</div>
+            </div>
+            <div class="timer-label">专注时间</div>
+            
+            <!-- 控制按钮 -->
+            <div class="timer-controls">
+                <button class="timer-btn" id="reset-btn">
+                    <i class="fas fa-redo-alt"></i>
+                </button>
+                <button class="timer-btn primary" id="start-btn">
+                    <i class="fas fa-play" id="play-icon"></i>
+                </button>
+                <button class="timer-btn" id="skip-btn">
+                    <i class="fas fa-forward"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计数据 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">今日专注</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4h</div>
+                <div class="stat-label">专注时长</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">完成任务</div>
+            </div>
+        </div>
+        
+        <!-- 专注记录 -->
+        <div class="card history-container">
+            <h3 class="text-lg font-bold mb-4">今日专注记录</h3>
+            <div class="history-list">
+                <div class="history-item">
+                    <div class="history-task">完成项目周报</div>
+                    <div class="history-time">25分钟 · 09:00</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-task">团队会议</div>
+                    <div class="history-time">50分钟 · 10:30</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-task">回复客户邮件</div>
+                    <div class="history-time">25分钟 · 13:00</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-task">回复客户邮件</div>
+                    <div class="history-time">25分钟 · 13:30</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-task">准备产品演示</div>
+                    <div class="history-time">25分钟 · 15:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-tasks"></i>
+            <span>任务</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-calendar"></i>
+            <span>日历</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-clock"></i>
+            <span>专注</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 接收主题消息
+        window.addEventListener('message', function(event) {
+            if (event.data.theme) {
+                if (event.data.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+
+        // 请求主题信息
+        window.parent.postMessage('getTheme', '*');
+
+        // 计时器功能
+        let timerInterval;
+        let isRunning = false;
+        let totalSeconds = 25 * 60; // 25分钟
+        let currentSeconds = totalSeconds;
+        const timerDisplay = document.getElementById('timer');
+        const timerProgress = document.getElementById('timer-progress');
+        const startBtn = document.getElementById('start-btn');
+        const playIcon = document.getElementById('play-icon');
+        const resetBtn = document.getElementById('reset-btn');
+        const skipBtn = document.getElementById('skip-btn');
+
+        // 更新计时器显示
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentSeconds / 60);
+            const seconds = currentSeconds % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // 更新进度环
+            const progress = (1 - currentSeconds / totalSeconds) * 100;
+            timerProgress.style.background = `conic-gradient(var(--primary-color) ${progress}%, transparent ${progress}%)`;
+        }
+
+        // 开始/暂停计时器
+        startBtn.addEventListener('click', function() {
+            if (isRunning) {
+                // 暂停计时器
+                clearInterval(timerInterval);
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+            } else {
+                // 开始计时器
+                timerInterval = setInterval(function() {
+                    if (currentSeconds > 0) {
+                        currentSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        // 计时结束
+                        clearInterval(timerInterval);
+                        playIcon.classList.remove('fa-pause');
+                        playIcon.classList.add('fa-play');
+                        isRunning = false;
+                        
+                        // 播放提示音（实际应用中）
+                        // 显示休息提示（实际应用中）
+                    }
+                }, 1000);
+                
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+            }
+            
+            isRunning = !isRunning;
+        });
+
+        // 重置计时器
+        resetBtn.addEventListener('click', function() {
+            clearInterval(timerInterval);
+            currentSeconds = totalSeconds;
+            updateTimerDisplay();
+            isRunning = false;
+            playIcon.classList.remove('fa-pause');
+            playIcon.classList.add('fa-play');
+        });
+
+        // 跳过当前计时
+        skipBtn.addEventListener('click', function() {
+            clearInterval(timerInterval);
+            currentSeconds = 0;
+            updateTimerDisplay();
+            isRunning = false;
+            playIcon.classList.remove('fa-pause');
+            playIcon.classList.add('fa-play');
+            
+            // 在实际应用中，这里会切换到休息时间
+        });
+
+        // 模式切换
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelector('.mode-btn.active').classList.remove('active');
+                this.classList.add('active');
+                
+                // 重置计时器
+                clearInterval(timerInterval);
+                isRunning = false;
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+                
+                // 根据模式设置时间
+                if (this.textContent === '番茄钟') {
+                    totalSeconds = 25 * 60;
+                } else if (this.textContent === '计时器') {
+                    totalSeconds = 60 * 60; // 1小时
+                } else {
+                    totalSeconds = 0; // 秒表从0开始
+                }
+                
+                currentSeconds = totalSeconds;
+                updateTimerDisplay();
+            });
+        });
+
+        // 初始化显示
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
